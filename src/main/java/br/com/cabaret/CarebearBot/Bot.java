@@ -1,5 +1,7 @@
 package br.com.cabaret.CarebearBot;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
@@ -10,9 +12,12 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Bot extends ListenerAdapter{
 	
+	@Value("${botid}")
+	private String botID;
+	
 	public void create() {
 		try {
-			JDABuilder builder = JDABuilder.createLight("OTU4ODY0NTI1NzE1NzI2NDQ2.YkTiLQ.1lqDcVqBRePTZqEZClFIRYezuLA", GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES);
+			JDABuilder builder = JDABuilder.createLight(botID, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES);
 			builder.addEventListeners(new Bot());
 		    builder.setActivity(Activity.playing("Mining in progress"));
 		    builder.build();	

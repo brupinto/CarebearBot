@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class VerifyDto {
-	private String CharacterID;
+	private Long CharacterID;
 	private String CharacterName;
     private String ExpiresOn;
     private String Scopes;

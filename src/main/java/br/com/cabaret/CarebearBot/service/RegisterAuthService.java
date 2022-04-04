@@ -8,12 +8,17 @@ import br.com.cabaret.CarebearBot.client.AuthClient;
 import br.com.cabaret.CarebearBot.client.dto.TokenDto;
 import br.com.cabaret.CarebearBot.client.dto.VerifyDto;
 import br.com.cabaret.CarebearBot.client.form.TokenForm;
+import br.com.cabaret.CarebearBot.model.Director;
+import br.com.cabaret.CarebearBot.repository.DirectorRepository;
 
 @Service
 public class RegisterAuthService {
 
 	@Autowired
 	AuthClient authClient;
+	
+	@Autowired
+	DirectorRepository directorRepo;
 	
 	@Value("${api-eveonline-token}")
 	private String basicToken;
@@ -25,9 +30,10 @@ public class RegisterAuthService {
 		TokenDto tokenDto = authClient.token(tokenForm, basicToken);
 		VerifyDto verifyDto = authClient.verify("Bearer "+tokenDto.getAccess_token());
 		
-		System.out.println("OK");
+		Director diretor = new Director();
+		diretor.setCharacterId(verifyDto.getCharacterID());
+		diretor.setRefreshToken(tokenDto.getRefresh_token());
+		directorRepo.save(diretor);
+
 	}
-
-
-
 }
