@@ -1,6 +1,6 @@
 package br.com.cabaret.CarebearBot;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -10,12 +10,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+@Service
 public class Bot extends ListenerAdapter{
-	
-	@Value("${botid}")
-	private String botID;
-	
-	public void create() {
+	public void create(String botID) {
 		try {
 			JDABuilder builder = JDABuilder.createLight(botID, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES);
 			builder.addEventListeners(new Bot());
