@@ -1,6 +1,8 @@
 package br.com.cabaret.CarebearBot;
 
-import org.springframework.beans.factory.annotation.Value;
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -10,8 +12,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 public class CarebearBotApplication {
 	
-	@Value("${botid}")
-	private String botID;
+	@Autowired
+	Bot bot;
+	
+	@PostConstruct
+	public void postConstruct() {
+		bot.create();
+	}
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CarebearBotApplication.class, args);

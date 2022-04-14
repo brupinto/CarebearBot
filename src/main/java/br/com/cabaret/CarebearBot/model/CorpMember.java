@@ -22,7 +22,7 @@ public class CorpMember {
 	@Column
 	private Long characterId;
 	@Column
-	private String name;
+	private String characterName;
 	@Column
 	private LocalDateTime dtLastUpdate;
 }
