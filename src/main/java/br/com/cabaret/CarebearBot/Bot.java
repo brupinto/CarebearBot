@@ -83,5 +83,8 @@ public class Bot extends ListenerAdapter{
         else if (msg.getContentRaw().equals("!report-ratting")) {
         	channel.sendMessage("Will be implemented soon!").queue();
         }
+        else if (msg.getContentRaw().equals("!clear-chat")) {
+        	event.getTextChannel().createCopy().queue( (v) ->  event.getTextChannel().delete().queue());
+        }
     }
 }

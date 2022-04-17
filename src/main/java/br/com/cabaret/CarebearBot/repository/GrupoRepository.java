@@ -15,5 +15,4 @@ public interface GrupoRepository  extends JpaRepository<Grupo, Long> {
 
 	@Query("select g from Grupo g")
 	public List<Grupo> getAll();
-	
 }

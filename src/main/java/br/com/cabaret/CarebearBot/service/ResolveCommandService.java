@@ -79,13 +79,32 @@ public class ResolveCommandService {
 	}
 
 	public String search(String contentRaw) {
-		// TODO Auto-generated method stub
-		return null;
+		String msgRtn = "This command will remove a characters group \n"
+				+ "!search <Character name>\n"
+				+ "\n"
+				+ "<GroupName> - full name or part of name\n"
+				+ "\n"
+				+ "An example use that:\n"
+				+ "!search sharp \n";
+		
+		String searchName = contentRaw.replace("!search","").trim();
+
+		if (!searchName.isEmpty()) {
+			try {
+				msgRtn = grupoService.search("%"+searchName.toLowerCase()+"%");	
+			}
+			catch(Exception e) {
+				msgRtn = "Something is wrong :( \n"
+						+ "Had error.:"+ e.getMessage();
+			}
+		}
+		
+		return msgRtn;
 	}
 
 	public String reportMining(String contentRaw) {
-		// TODO Auto-generated method stub
-		return null;
+		corpService.updateMiningReport();
+		return "done!";
 	}
 
 }

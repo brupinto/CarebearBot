@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
@@ -16,9 +14,14 @@ import lombok.Setter;
 @Setter
 public class CorpMember {
 	
-	@Id @GeneratedValue (strategy = GenerationType.IDENTITY)
-	@Column
-	private Long id;
+	public CorpMember() {
+		
+	}
+	public CorpMember(Long character_id) {
+		characterId = character_id; 
+	}
+	
+	@Id
 	@Column
 	private Long characterId;
 	@Column

@@ -49,7 +49,7 @@ public class GrupoService {
 				Grupo grupoUpdate = grupoList.get(0);
 				GrupoDetail newAlt = new GrupoDetail();
 				newAlt.setGrupo(grupoUpdate);
-				newAlt.setCharacterId(corpMemberList.get(0).getCharacterId());
+				newAlt.setMember(corpMemberList.get(0));
 				newAlt.setCharacterName(corpMemberList.get(0).getCharacterName());
 				List<GrupoDetail> alts = grupoUpdate.getAlts();
 				alts.add(newAlt);
@@ -62,7 +62,7 @@ public class GrupoService {
 			grupoNew.setGrupoName(groupName);
 			GrupoDetail grupoDetail = new GrupoDetail();
 			grupoDetail.setGrupo(grupoNew);
-			grupoDetail.setCharacterId(corpMemberList.get(0).getCharacterId());
+			grupoDetail.setMember(corpMemberList.get(0));
 			grupoDetail.setCharacterName(corpMemberList.get(0).getCharacterName());
 			List<GrupoDetail> alts =  new ArrayList<GrupoDetail>();
 			alts.add(grupoDetail);
@@ -80,4 +80,20 @@ public class GrupoService {
 		grupoRep.delete(grupoList.get(0));
 	}
 
+	public String search(String searchName) {
+		String rtn = "";
+		List<GrupoDetail> grupoList = grupoDetailRep.findLikeName(searchName);
+		
+		if (grupoList.isEmpty()) {
+			rtn = "This Character is not found in some group!";
+		}
+		else {
+			rtn = "this Character is found on:\n";
+			for (GrupoDetail g : grupoList) {
+				rtn += g.getGrupo().getGrupoName()+"\n";
+			}
+		}
+		
+		return rtn;
+	}
 }

@@ -1,5 +1,7 @@
 package br.com.cabaret.CarebearBot.model;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,15 +15,25 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class GrupoDetail {
+public class MiningObserverHistory {
 	
 	@Id @GeneratedValue (strategy = GenerationType.IDENTITY)
 	@Column
 	private Long id;
-	@ManyToOne
-	private Grupo grupo;
-	@ManyToOne
-	private CorpMember member;
 	@Column
-	private String characterName;
+	private Long recorded_corporation_id;
+	@ManyToOne
+	private MiningObserver observer;
+	@ManyToOne
+	private CorpMember corpMember;
+	@Column
+	private LocalDate last_updated;
+	@Column
+	private Long quantity;
+	@Column
+    private Long type_id;
+	@Column
+    private String typeDescription;
+	@Column
+	private Long page;
 }
