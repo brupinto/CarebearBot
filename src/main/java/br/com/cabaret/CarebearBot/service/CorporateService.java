@@ -14,6 +14,7 @@ import br.com.cabaret.CarebearBot.client.CharacterClient;
 import br.com.cabaret.CarebearBot.client.CorporationClient;
 import br.com.cabaret.CarebearBot.client.IndustryClient;
 import br.com.cabaret.CarebearBot.client.UniverseClient;
+import br.com.cabaret.CarebearBot.client.dto.CharacterDto;
 import br.com.cabaret.CarebearBot.client.dto.MiningObserversDetailDto;
 import br.com.cabaret.CarebearBot.client.dto.MiningObserversDto;
 import br.com.cabaret.CarebearBot.client.dto.TypeDto;
@@ -66,18 +67,25 @@ public class CorporateService {
 			List<Long> members = corpClient.memberList(diretorRep.getDirector().get(0).getCorporateId(), authService.refreshToken());
 			
 			for (Long membro : members) {
-				CorpMember corp = new CorpMember();
-				corp.setCharacterId(membro);
-				corp.setCharacterName(charClient.characters(membro).getName().toLowerCase());
-				corp.setDtLastUpdate(LocalDateTime.now());
+				CorpMember m = corpMemberRep.findById(membro).get();
 				
-				corpMemberRep.save(corp);
+				if (m == null) {
+					CorpMember corp = new CorpMember();
+					corp.setCharacterId(membro);
+					corp.setCharacterName(null);
+					corp.setDtLastUpdate(LocalDateTime.now());
+					
+					corpMemberRep.save(corp);
+				}
 			}	
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		
+		updateMemberName();
+		
 	}
+	
 	
 	public void updateMiningReport() {
 		
@@ -128,7 +136,20 @@ public class CorporateService {
 		
 	}
 	
-	public void updateType() {
+	private void updateMemberName() {
+		List<CorpMember> newMembers = corpMemberRep.findByNameNull();
+		
+		if (newMembers != null && !newMembers.isEmpty()) {
+			for (CorpMember cm : newMembers) {
+				CharacterDto dto = charClient.characters(cm.getCharacterId());
+				cm.setCharacterName(dto.getName());
+			}
+			
+			corpMemberRep.saveAll(newMembers);
+		}
+	}
+	
+	private void updateType() {
 		List<Long> types = miningObserverHistoryRep.distinctType();
 		List<TypeEve> typesEve = new ArrayList<>();
 		
