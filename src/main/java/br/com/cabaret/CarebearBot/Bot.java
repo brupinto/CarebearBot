@@ -1,7 +1,10 @@
 package br.com.cabaret.CarebearBot;
 
+import java.awt.Color;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +15,7 @@ import br.com.cabaret.CarebearBot.dto.ResultReportMiningDto;
 import br.com.cabaret.CarebearBot.service.ResolveCommandService;
 import br.com.cabaret.CarebearBot.service.dto.GroupDetailDto;
 import br.com.cabaret.CarebearBot.service.dto.GroupDto;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
@@ -48,20 +52,28 @@ public class Bot extends ListenerAdapter{
     	Message msg = event.getMessage();
         MessageChannel channel = event.getChannel();
         
-        if (!channel.getName().equalsIgnoreCase("🍪𝐌𝐈𝐍𝐈𝐍𝐆🍪"))
+        if (!event.getGuild().getName().equalsIgnoreCase("whelps")) {
+	        if (!channel.getName().equalsIgnoreCase("🍪𝐌𝐈𝐍𝐈𝐍𝐆🍪"))
+	        	return;
+	        List<Role> roles = event.getMember().getRoles();
+	        Boolean hasRole = false;
+	        
+	        for (Role r : roles) {
+	        	if (r.getName().equalsIgnoreCase("diretor")) {
+	        		hasRole = true;
+	        	}
+	        }
+
+        	channel.sendMessage("bOOT ESTA EM MANUTENCAO!!!!!!!!!!!").queue();
         	return;
-        List<Role> roles = event.getMember().getRoles();
-        Boolean hasRole = false;
-        
-        for (Role r : roles) {
-        	if (r.getName().equalsIgnoreCase("diretor")) {
-        		hasRole = true;
-        	}
+/*	        
+        	if(!hasRole) {
+	        	return;
+	        }
+	        */
         }
         
-        if(!hasRole) {
-        	return;
-        }
+        
         
         if (msg.getContentRaw().equals("!help")) {
         	channel.sendMessage("**Carebear command List!**\n"
@@ -101,14 +113,19 @@ public class Bot extends ListenerAdapter{
         	channel.sendMessage(cmdService.reportMining(msg.getContentRaw(), results)).queue();
         	
         	for(ResultReportMiningDto p : results) {
-        		String row = "**"+ p.getCharacterName()+"**\n";
-        				
+        		String row = "";
+        		
     			for (ResultReportMiningDetailDto o : p.getOres()) {
-    				row += "Ore.:"+o.getTypeName()+"\n";
-    				row += "Qtde minerado.:"+o.getQtMining().toString()+"\n";
-    				row += "Qtde Taxa Corp.:"+o.getTaxaCorp().toString()+"\n";
+    				row += "**"+o.getTypeName()+"** Total.:"+NumberFormat.getNumberInstance().format(o.getQtMining())+" **Taxa da Corp.:"+NumberFormat.getNumberInstance().format(o.getTaxaCorp())+"**\n";
     			}
-     			channel.sendMessage(row).queue();			
+
+        		var embed = new EmbedBuilder()
+            			.setTitle("**"+ p.getCharacterName().toUpperCase()+"**")
+                        .setDescription(row) 
+                        .setColor(Color.LIGHT_GRAY)
+                        .build();
+        				
+        		channel.sendMessageEmbeds(embed).queue();		
         	}
         }
         else if (msg.getContentRaw().equals("!report-ratting")) {
@@ -117,8 +134,9 @@ public class Bot extends ListenerAdapter{
         else if (msg.getContentRaw().equals("!clear-chat")) {
         	event.getTextChannel().createCopy().queue( (v) ->  event.getTextChannel().delete().queue());
         }
-        else if (msg.getContentRaw().equals("!update-member")) {
-        	cmdService.UpdateMemberList();
+        else if (msg.getContentRaw().equals("!update-all")) {
+        	cmdService.updateAll();
+        	channel.sendMessage("done.").queue();
         }
     }
 }

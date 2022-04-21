@@ -170,6 +170,9 @@ public class ResolveCommandService {
 					}
 				}
 				
+				if (regAtual != null)
+					result.add(regAtual);
+				
 				msgRtn = "Report to ["+dtIni.toString()+"] until ["+dtFim.toString()+"]\n";
 			}
 		}
@@ -190,7 +193,12 @@ public class ResolveCommandService {
 		return regAtual;
 	}
 
-	public void UpdateMemberList() {
+	public void updateMemberList() {
 		corpService.updateMemberList();
+	}
+	
+	public void updateAll() {
+		corpService.updateMemberList();
+		corpService.updateMiningReport();
 	}
 }

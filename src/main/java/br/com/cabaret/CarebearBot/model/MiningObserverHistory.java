@@ -15,7 +15,24 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+
 public class MiningObserverHistory {
+
+	public MiningObserverHistory() {
+		
+	}
+	
+	public MiningObserverHistory(Long recorded_corporation_id, MiningObserver observer, CorpMember corpMember,
+			LocalDate last_updated, Long quantity, Long type_id, Long page) {
+		super();
+		this.recorded_corporation_id = recorded_corporation_id;
+		this.observer = observer;
+		this.corpMember = corpMember;
+		this.last_updated = last_updated;
+		this.quantity = quantity;
+		this.type_id = type_id;
+		this.page = page;
+	}
 	
 	@Id @GeneratedValue (strategy = GenerationType.IDENTITY)
 	@Column

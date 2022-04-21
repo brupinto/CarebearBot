@@ -66,16 +66,26 @@ public class CorporateService {
 		try {
 			List<Long> members = corpClient.memberList(diretorRep.getDirector().get(0).getCorporateId(), authService.refreshToken());
 			
+			if (members == null)
+				return;
+			
 			for (Long membro : members) {
-				CorpMember m = corpMemberRep.findById(membro).get();
-				
-				if (m == null) {
-					CorpMember corp = new CorpMember();
-					corp.setCharacterId(membro);
-					corp.setCharacterName(null);
-					corp.setDtLastUpdate(LocalDateTime.now());
+				if (membro != null) {
+					CorpMember m = null;
+					try {
+						m = corpMemberRep.findById(membro).get();	
+					}
+					catch(Exception e) {
+					}
 					
-					corpMemberRep.save(corp);
+					if (m == null) {
+						CorpMember corp = new CorpMember();
+						corp.setCharacterId(membro);
+						corp.setCharacterName(null);
+						corp.setDtLastUpdate(LocalDateTime.now());
+						
+						corpMemberRep.save(corp);
+					}
 				}
 			}	
 		}catch (Exception ex) {
@@ -113,8 +123,15 @@ public class CorporateService {
 					
 					for(MiningObserverHistory moh : reportList) {
 						MiningObserverHistory mExists = miningObserverHistoryRep.searchData(moh.getObserver().getObserver_id(), moh.getCorpMember().getCharacterId(), moh.getType_id(), moh.getLast_updated());
-						mExists.setQuantity(moh.getQuantity());
-						miningObserverHistoryRep.save(mExists);	
+						
+						if(mExists == null) {
+							mExists = new MiningObserverHistory(moh.getRecorded_corporation_id(), moh.getObserver(), moh.getCorpMember(), moh.getLast_updated(), moh.getQuantity(),  moh.getType_id(), page);
+						}
+						else {
+							mExists.setQuantity(moh.getQuantity());
+						}
+						
+						miningObserverHistoryRep.save(mExists);
 					}
 				}
 				
