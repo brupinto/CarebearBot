@@ -63,14 +63,13 @@ public class Bot extends ListenerAdapter{
 	        		hasRole = true;
 	        	}
 	        }
-
+/*
         	channel.sendMessage("bOOT ESTA EM MANUTENCAO!!!!!!!!!!!").queue();
         	return;
-/*	        
+*/
         	if(!hasRole) {
 	        	return;
 	        }
-	        */
         }
         
         
