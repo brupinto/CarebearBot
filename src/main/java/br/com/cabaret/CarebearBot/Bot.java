@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import br.com.cabaret.CarebearBot.client.CharacterClient;
 import br.com.cabaret.CarebearBot.dto.ResultReportMiningDetailDto;
 import br.com.cabaret.CarebearBot.dto.ResultReportMiningDto;
 import br.com.cabaret.CarebearBot.service.ResolveCommandService;
@@ -17,9 +17,11 @@ import br.com.cabaret.CarebearBot.service.dto.GroupDetailDto;
 import br.com.cabaret.CarebearBot.service.dto.GroupDto;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -33,6 +35,9 @@ public class Bot extends ListenerAdapter{
 	
 	@Autowired
 	ResolveCommandService cmdService;
+	
+	@Autowired
+	CharacterClient charClient;
 	
 	public void create() {
 		try {
@@ -86,13 +91,26 @@ public class Bot extends ListenerAdapter{
         }
         else if (msg.getContentRaw().equals("!group-list")) {
         	List<GroupDto> groupList = cmdService.groupList();
+        	
         	for(GroupDto pos: groupList) {
-        		String msgRtn = "**Group.: "+ pos.getGrupoName() +"**\n";
+        		List<MessageEmbed> pilotsList = new ArrayList<>();
+        		
 				for( GroupDetailDto detailPos : pos.getDetails()) {
-					msgRtn += detailPos.getCharacterName()+"\n";
+					var embed = new EmbedBuilder()
+	            			.setDescription(detailPos.getCharacterName().replaceAll(" ", "\n"))
+	                        .setThumbnail(charClient.portrait(detailPos.getCharacterId()).getPx64x64())
+	                        .addBlankField(false)
+	            			.setColor(Color.blue)
+	            			.build();
+					pilotsList.add(embed);
 				}
+				
+				var msgb = new MessageBuilder()
+	        			.setContent("**Group.:"+pos.getGrupoName()+"**")
+	    				.setEmbeds(pilotsList)
+	    				.build();
 
-				channel.sendMessage(msgRtn).queue();
+				channel.sendMessage(msgb).queue();
         	}
         }
         else if (msg.getContentRaw().startsWith("!group-add")) {
@@ -137,5 +155,21 @@ public class Bot extends ListenerAdapter{
         	cmdService.updateAll();
         	channel.sendMessage("done.").queue();
         }
+        else if (msg.getContentRaw().equals("!teste")) {
+        	
+        	var embed = new EmbedBuilder()
+        			.setTitle("**Texto 01**")
+                    .setColor(Color.blue)
+                    .setThumbnail(charClient.portrait(90157237L).getPx64x64())
+                    .build();
+        	
+        	var embed2 = new EmbedBuilder()
+        			.setTitle("**Texto 02**")
+                    .setColor(Color.cyan)
+                    .setThumbnail(charClient.portrait(91437812L).getPx64x64())
+                    .build();
+
+        }
+		
     }
 }
