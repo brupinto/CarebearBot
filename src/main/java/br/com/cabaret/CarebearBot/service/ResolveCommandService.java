@@ -1,6 +1,7 @@
 package br.com.cabaret.CarebearBot.service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,6 +146,9 @@ public class ResolveCommandService {
 					d.setTypeName((String)os[1]);
 					d.setQtMining(((BigDecimal)os[2]).longValue());
 					d.setTaxaCorp(Long.valueOf(((String)os[3]).replaceAll(",", "")));
+					d.setFgChar(((BigInteger) os[4]).longValue());
+					
+					
 					reportValues.add(d);
 				}
 				
@@ -153,18 +157,18 @@ public class ResolveCommandService {
 				for(ReportMiningDto r : reportValues) {
 					if (regAtual == null) {
 						regAtual = mountReg(r);
-						ResultReportMiningDetailDto detail = new ResultReportMiningDetailDto(r.getTypeName(), r.getQtMining(), r.getTaxaCorp());
+						ResultReportMiningDetailDto detail = new ResultReportMiningDetailDto(r.getTypeName(), r.getQtMining(), r.getTaxaCorp(), r.getFgChar());
 						regAtual.getOres().add(detail);
 					}
 					else {
 						if (r.getCharacterName().equalsIgnoreCase(regAtual.getCharacterName())) {
-							ResultReportMiningDetailDto detail = new ResultReportMiningDetailDto(r.getTypeName(), r.getQtMining(), r.getTaxaCorp());
+							ResultReportMiningDetailDto detail = new ResultReportMiningDetailDto(r.getTypeName(), r.getQtMining(), r.getTaxaCorp(), r.getFgChar());
 							regAtual.getOres().add(detail);
 						}
 						else {
 							result.add(regAtual);
 							regAtual = mountReg(r);
-							ResultReportMiningDetailDto detail = new ResultReportMiningDetailDto(r.getTypeName(), r.getQtMining(), r.getTaxaCorp());
+							ResultReportMiningDetailDto detail = new ResultReportMiningDetailDto(r.getTypeName(), r.getQtMining(), r.getTaxaCorp(), r.getFgChar());
 							regAtual.getOres().add(detail);
 						}
 					}

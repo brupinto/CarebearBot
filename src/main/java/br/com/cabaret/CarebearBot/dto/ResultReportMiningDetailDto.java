@@ -9,5 +9,6 @@ public class ResultReportMiningDetailDto {
 	private String TypeName;
 	private Long qtMining;
 	private Long taxaCorp;
+	private Long fgChar;
 
 }

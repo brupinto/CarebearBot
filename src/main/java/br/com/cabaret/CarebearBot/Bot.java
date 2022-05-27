@@ -129,21 +129,44 @@ public class Bot extends ListenerAdapter{
         	List<ResultReportMiningDto> results = new ArrayList<>();
         	channel.sendMessage(cmdService.reportMining(msg.getContentRaw(), results)).queue();
         	
+        	if (results.size() > 0) {
+        		var embedGrupo = new EmbedBuilder()
+            			.setTitle("**Grupo**")
+                        .setColor(Color.BLUE)
+                        .build();
+        		
+        		var embedChar = new EmbedBuilder()
+            			.setTitle("**Character**")
+                        .setColor(Color.ORANGE)
+                        .build();
+        		
+        		channel.sendMessageEmbeds(embedGrupo).queue();
+        		channel.sendMessageEmbeds(embedChar).queue();
+        	}
         	for(ResultReportMiningDto p : results) {
+        		Color color = Color.LIGHT_GRAY;
         		String row = "";
         		
     			for (ResultReportMiningDetailDto o : p.getOres()) {
+    				if (o.getFgChar().compareTo(1L) == 0) {
+    					color = Color.ORANGE;
+    				}
+    				else {
+    					color = Color.BLUE;
+    				}
     				row += "**"+o.getTypeName()+"** Total.:"+NumberFormat.getNumberInstance().format(o.getQtMining())+" **Taxa da Corp.:"+NumberFormat.getNumberInstance().format(o.getTaxaCorp())+"**\n";
     			}
 
         		var embed = new EmbedBuilder()
             			.setTitle("**"+ p.getCharacterName().toUpperCase()+"**")
                         .setDescription(row) 
-                        .setColor(Color.LIGHT_GRAY)
+                        .setColor(color)
                         .build();
         				
         		channel.sendMessageEmbeds(embed).queue();		
         	}
+        	
+        	channel.sendMessage("Done Report!").queue();
         }
         else if (msg.getContentRaw().equals("!report-ratting")) {
         	channel.sendMessage("Will be implemented soon!").queue();
