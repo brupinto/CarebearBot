@@ -1,8 +1,11 @@
 package br.com.cabaret.CarebearBot.dto;
 
+import java.math.BigDecimal;
+
 public class ReportMiningDto {
 	private String characterName;
 	private String typeName;
+	private BigDecimal pcMining;
 	private Long qtMining;
 	private Long taxaCorp;
 	private Long fgChar;
@@ -49,5 +52,11 @@ public class ReportMiningDto {
 	}
 	public void setFgChar(Long fgChar) {
 		this.fgChar = fgChar;
+	}
+	public BigDecimal getPcMining() {
+		return pcMining;
+	}
+	public void setPcMining(BigDecimal pcMining) {
+		this.pcMining = pcMining;
 	}
 }

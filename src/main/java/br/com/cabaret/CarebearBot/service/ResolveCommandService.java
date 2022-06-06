@@ -15,6 +15,7 @@ import br.com.cabaret.CarebearBot.dto.ResultReportMiningDetailDto;
 import br.com.cabaret.CarebearBot.dto.ResultReportMiningDto;
 import br.com.cabaret.CarebearBot.repository.MiningObserverHistoryRepository;
 import br.com.cabaret.CarebearBot.service.dto.GroupDto;
+import br.com.cabaret.CarebearBot.service.dto.ReportMiningGraphDto;
 
 @Service
 public class ResolveCommandService {
@@ -177,7 +178,7 @@ public class ResolveCommandService {
 				if (regAtual != null)
 					result.add(regAtual);
 				
-				msgRtn = "Report to ["+dtIni.toString()+"] until ["+dtFim.toString()+"]\n";
+				msgRtn = "Report to ["+dtIni.toString()+"] until ["+dtFim.toString()+"]  http://52.24.37.58:8080/report/chart?dtini="+dtIni.toString()+"&dtfim="+dtFim.toString()+"\n";
 			}
 		}
 		catch(Exception e) {
@@ -187,6 +188,65 @@ public class ResolveCommandService {
 		}
 			
 		return msgRtn;
+	}
+	
+	public ReportMiningGraphDto reportMiningGraphPlayers(String dtIniVal, String dtFimVal) {
+		ReportMiningGraphDto rtn = new ReportMiningGraphDto();
+		
+		try 
+		{
+			LocalDate dtIni = LocalDate.parse(dtIniVal);
+			LocalDate dtFim = dtFimVal.isEmpty() ? LocalDate.now() :  LocalDate.parse(dtFimVal);
+			
+			List<Object[]> tmp = miningObsHistRep.reportMiningGraphPlayers(dtIni, dtFim);
+			List<ReportMiningDto> reportValues = new ArrayList<>();
+			
+			for (Object[] os : tmp) {
+				ReportMiningDto d = new ReportMiningDto(); 
+				d.setCharacterName((String)os[0]);
+				d.setPcMining(((BigDecimal)os[1]));
+				d.setFgChar(((BigInteger) os[2]).longValue());
+
+				reportValues.add(d);
+			}
+			
+			for(ReportMiningDto r : reportValues) {
+				rtn.addRegister(r.getCharacterName(), r.getPcMining().toString());
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return rtn;			
+	}
+	
+	public ReportMiningGraphDto reportMiningGraphOres(String dtIniVal, String dtFimVal) {
+		ReportMiningGraphDto rtn = new ReportMiningGraphDto();
+		
+		try 
+		{
+			LocalDate dtIni = LocalDate.parse(dtIniVal);
+			LocalDate dtFim = dtFimVal.isEmpty() ? LocalDate.now() :  LocalDate.parse(dtFimVal);
+			
+			List<Object[]> tmp = miningObsHistRep.reportMiningGraphOres(dtIni, dtFim);
+			List<ReportMiningDto> reportValues = new ArrayList<>();
+			
+			for (Object[] os : tmp) {
+				ReportMiningDto d = new ReportMiningDto(); 
+				d.setTypeName((String)os[0]);
+				d.setQtMining(((BigDecimal)os[1]).longValue());
+			}
+			
+			for(ReportMiningDto r : reportValues) {
+				rtn.addRegister(r.getTypeName(), r.getQtMining().toString());
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return rtn;			
 	}
 	
 	private ResultReportMiningDto mountReg(ReportMiningDto r) {
