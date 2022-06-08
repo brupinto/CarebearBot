@@ -178,7 +178,7 @@ public class ResolveCommandService {
 				if (regAtual != null)
 					result.add(regAtual);
 				
-				msgRtn = "Report to ["+dtIni.toString()+"] until ["+dtFim.toString()+"]  http://52.24.37.58:8080/report/chart?dtini="+dtIni.toString()+"&dtfim="+dtFim.toString()+"\n";
+				msgRtn = "Report to ["+dtIni.toString()+"] until ["+dtFim.toString()+"]\n **Graph Players**\n http://52.24.37.58:8080/report/chart?dtini="+dtIni.toString()+"&dtfim="+dtFim.toString()+"\n **Graph Ores**\n http://52.24.37.58:8080/report/chartores?dtini="+dtIni.toString()+"&dtfim="+dtFim.toString()+"\n";
 			}
 		}
 		catch(Exception e) {
@@ -236,6 +236,7 @@ public class ResolveCommandService {
 				ReportMiningDto d = new ReportMiningDto(); 
 				d.setTypeName((String)os[0]);
 				d.setQtMining(((BigDecimal)os[1]).longValue());
+				reportValues.add(d);
 			}
 			
 			for(ReportMiningDto r : reportValues) {
