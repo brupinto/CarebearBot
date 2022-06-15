@@ -1,21 +1,32 @@
 package br.com.cabaret.CarebearBot;
 
 import java.awt.Color;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.WebSocket;
+import java.net.http.WebSocket.Builder;
+import java.net.http.WebSocket.Listener;
+import java.nio.ByteBuffer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+
 import br.com.cabaret.CarebearBot.client.CharacterClient;
 import br.com.cabaret.CarebearBot.dto.ResultReportMiningDetailDto;
 import br.com.cabaret.CarebearBot.dto.ResultReportMiningDto;
+import br.com.cabaret.CarebearBot.dto.ZKillDto;
 import br.com.cabaret.CarebearBot.service.ResolveCommandService;
 import br.com.cabaret.CarebearBot.service.dto.GroupDetailDto;
 import br.com.cabaret.CarebearBot.service.dto.GroupDto;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -23,6 +34,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -34,31 +47,49 @@ public class Bot extends ListenerAdapter{
 	private String botID;
 	
 	@Autowired
-	ResolveCommandService cmdService;
+	private ResolveCommandService cmdService;
+	private WebSocket webSocket;
 	
 	@Autowired
-	CharacterClient charClient;
+	private CharacterClient charClient;
+	private JDA jda;
+	
+	public void connectWS(JDA jda) {
+			 HttpClient httpClient = HttpClient.newBuilder().build();
+		     Builder webSocketBuilder = httpClient.newWebSocketBuilder();
+		     webSocket = webSocketBuilder.buildAsync(URI.create("wss://zkillboard.com/websocket/"), new WebSocketListener(jda)).join();
+		     webSocket.sendText("{\"action\":\"sub\",\"channel\":\"killstream\"}", true);
+	}
 	
 	public void create() {
 		try {
 			JDABuilder builder = JDABuilder.createLight(botID, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES);
 		    builder.setActivity(Activity.playing("Working and almost done"));
 		    builder.addEventListeners(this);
-		    builder.build();	
+		    jda = builder.build();	
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-    
+	
+    @Override
+    public void onReady(ReadyEvent event)
+    {
+		connectWS(event.getJDA());
+    }
+	
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
     	Message msg = event.getMessage();
         MessageChannel channel = event.getChannel();
         
+        if(webSocket.isInputClosed())
+        	connectWS(event.getJDA());
+        
         if (!event.getGuild().getName().equalsIgnoreCase("whelps")) {
-	        if (!channel.getName().equalsIgnoreCase("🍪𝐌𝐈𝐍𝐈𝐍𝐆🍪"))
+	        if (!channel.getName().equalsIgnoreCase("🍪𝐌𝐈𝐍𝐈𝐍𝐆🍪") && !channel.getName().equalsIgnoreCase("👿𝐊𝐈𝐋𝐋𝐁𝐎𝐀𝐑𝐃😈"))
 	        	return;
 	        List<Role> roles = event.getMember().getRoles();
 	        Boolean hasRole = false;
@@ -68,16 +99,11 @@ public class Bot extends ListenerAdapter{
 	        		hasRole = true;
 	        	}
 	        }
-/*
-        	channel.sendMessage("bOOT ESTA EM MANUTENCAO!!!!!!!!!!!").queue();
-        	return;
-*/
+	        
         	if(!hasRole) {
 	        	return;
 	        }
         }
-        
-        
         
         if (msg.getContentRaw().equals("!help")) {
         	channel.sendMessage("**Carebear command List!**\n"
@@ -194,5 +220,48 @@ public class Bot extends ListenerAdapter{
 
         }
 		
+    }
+    
+    private static class WebSocketListener implements Listener {
+    	private JDA jda;
+    	
+    	public WebSocketListener(JDA jdaVal ) {
+    		jda = jdaVal;
+    	}
+        @Override
+        public void onOpen(WebSocket webSocket) {
+            System.out.println("CONNECTED");
+            Listener.super.onOpen(webSocket);      
+        }
+ 
+        @Override
+        public void onError(WebSocket webSocket, Throwable error) {
+            System.out.println("Error occurred" + error.getMessage());
+            Listener.super.onError(webSocket, error);
+        }
+ 
+        @Override
+        public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
+            Gson gson = new Gson();
+           
+            try 
+            {
+                ZKillDto rtn = gson.fromJson(data.toString(), ZKillDto.class);
+	            
+                if (rtn.ValidCorp(98517775L)) {
+	            	jda.getTextChannelsByName("👿𝐊𝐈𝐋𝐋𝐁𝐎𝐀𝐑𝐃😈", true).get(0).sendMessage(rtn.getZkb().getUrl()).queue();
+	            }
+            }
+            catch(Exception ex) {
+            	ex.printStackTrace();
+            }
+            return Listener.super.onText(webSocket, data, last);
+        }
+        
+        @Override
+        public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
+            System.out.println("onPong: " + new String(message.array()));
+            return Listener.super.onPong(webSocket, message);
+        }
     }
 }
