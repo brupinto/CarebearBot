@@ -34,7 +34,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -52,21 +51,20 @@ public class Bot extends ListenerAdapter{
 	
 	@Autowired
 	private CharacterClient charClient;
-	private JDA jda;
 	
 	public void connectWS(JDA jda) {
 			 HttpClient httpClient = HttpClient.newBuilder().build();
 		     Builder webSocketBuilder = httpClient.newWebSocketBuilder();
 		     webSocket = webSocketBuilder.buildAsync(URI.create("wss://zkillboard.com/websocket/"), new WebSocketListener(jda)).join();
-		     webSocket.sendText("{\"action\":\"sub\",\"channel\":\"killstream\"}", true);
+		     webSocket.sendText("{\"action\":\"sub\",\"channel\":\"corporation:98517775\"}", true);
 	}
 	
 	public void create() {
 		try {
 			JDABuilder builder = JDABuilder.createLight(botID, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES);
-		    builder.setActivity(Activity.playing("Working and almost done"));
+		    builder.setActivity(Activity.playing("I am looking your pods"));
 		    builder.addEventListeners(this);
-		    jda = builder.build();	
+		    builder.build();	
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -246,14 +244,11 @@ public class Bot extends ListenerAdapter{
            
             try 
             {
-                ZKillDto rtn = gson.fromJson(data.toString(), ZKillDto.class);
-	            
-                if (rtn.ValidCorp(98517775L)) {
-	            	jda.getTextChannelsByName("👿𝐊𝐈𝐋𝐋𝐁𝐎𝐀𝐑𝐃😈", true).get(0).sendMessage(rtn.getZkb().getUrl()).queue();
-	            }
+            	ZKillDto rtn = gson.fromJson(data.toString(), ZKillDto.class);
+            	jda.getTextChannelsByName("👿𝐊𝐈𝐋𝐋𝐁𝐎𝐀𝐑𝐃😈", true).get(0).sendMessage(rtn.getUrl()).queue();
             }
             catch(Exception ex) {
-            	ex.printStackTrace();
+            	
             }
             return Listener.super.onText(webSocket, data, last);
         }
