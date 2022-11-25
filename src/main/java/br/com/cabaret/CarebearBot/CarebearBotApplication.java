@@ -24,5 +24,6 @@ public class CarebearBotApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CarebearBotApplication.class, args);
+		
 	}
 }

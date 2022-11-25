@@ -110,8 +110,8 @@ public class Bot extends ListenerAdapter{
         					+ "!group-delete\n"
         					+ "!search\n"
         					+ "!register\n"
-        					+ "!report-mining\n"
-        					+ "!report-ratting").queue();
+        					+ "!report-ratting\n"
+        					+ "!zkill-reset").queue();
         }
         else if (msg.getContentRaw().equals("!group-list")) {
         	List<GroupDto> groupList = cmdService.groupList();
@@ -170,19 +170,22 @@ public class Bot extends ListenerAdapter{
         	for(ResultReportMiningDto p : results) {
         		Color color = Color.LIGHT_GRAY;
         		String row = "";
+        		String isNotMember = "";
         		
     			for (ResultReportMiningDetailDto o : p.getOres()) {
     				if (o.getFgChar().compareTo(1L) == 0) {
     					color = Color.ORANGE;
+    					isNotMember = p.getFlNotMember().equals(1)? " - [no corpmate]":"";
     				}
     				else {
     					color = Color.BLUE;
+    					isNotMember = "";
     				}
     				row += "**"+o.getTypeName()+"** Total.:"+NumberFormat.getNumberInstance().format(o.getQtMining())+" **Taxa da Corp.:"+NumberFormat.getNumberInstance().format(o.getTaxaCorp())+"**\n";
     			}
 
         		var embed = new EmbedBuilder()
-            			.setTitle("**"+ p.getCharacterName().toUpperCase()+"**")
+            			.setTitle("**"+ p.getCharacterName().toUpperCase()+isNotMember+"**")
                         .setDescription(row) 
                         .setColor(color)
                         .build();
@@ -202,22 +205,10 @@ public class Bot extends ListenerAdapter{
         	cmdService.updateAll();
         	channel.sendMessage("done.").queue();
         }
-        else if (msg.getContentRaw().equals("!teste")) {
-        	
-        	var embed = new EmbedBuilder()
-        			.setTitle("**Texto 01**")
-                    .setColor(Color.blue)
-                    .setThumbnail(charClient.portrait(90157237L).getPx64x64())
-                    .build();
-        	
-        	var embed2 = new EmbedBuilder()
-        			.setTitle("**Texto 02**")
-                    .setColor(Color.cyan)
-                    .setThumbnail(charClient.portrait(91437812L).getPx64x64())
-                    .build();
-
+        else if (msg.getContentRaw().equals("!zkill-reset")) {
+        	connectWS(event.getJDA());
+        	channel.sendMessage("done.").queue();
         }
-		
     }
     
     private static class WebSocketListener implements Listener {

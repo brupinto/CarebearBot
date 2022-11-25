@@ -28,4 +28,6 @@ public class CorpMember {
 	private String characterName;
 	@Column
 	private LocalDateTime dtLastUpdate;
+	@Column
+	private Integer flNotMember;
 }

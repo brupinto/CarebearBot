@@ -9,18 +9,20 @@ public class ReportMiningDto {
 	private Long qtMining;
 	private Long taxaCorp;
 	private Long fgChar;
+	private Integer flNotMember;
 	
 	public ReportMiningDto() {
 		
 	}
 	
-	public ReportMiningDto(String characterName, String typeName, Long qtMining, Long taxaCorp, Long fgChar) {
+	public ReportMiningDto(String characterName, String typeName, Long qtMining, Long taxaCorp, Long fgChar, Integer flNotMember) {
 		super();
 		this.characterName = characterName;
 		this.typeName = typeName;
 		this.qtMining = qtMining;
 		this.taxaCorp = taxaCorp;
 		this.fgChar = fgChar;
+		this.flNotMember = flNotMember;
 	}
 	
 	public String getCharacterName() {
@@ -58,5 +60,11 @@ public class ReportMiningDto {
 	}
 	public void setPcMining(BigDecimal pcMining) {
 		this.pcMining = pcMining;
+	}
+	public Integer getFlNotMember() {
+		return flNotMember;
+	}
+	public void setFlNotMember(Integer flNotMember) {
+		this.flNotMember = flNotMember;
 	}
 }

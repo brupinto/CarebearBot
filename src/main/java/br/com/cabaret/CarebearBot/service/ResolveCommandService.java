@@ -148,6 +148,7 @@ public class ResolveCommandService {
 					d.setQtMining(((BigDecimal)os[2]).longValue());
 					d.setTaxaCorp(Long.valueOf(((String)os[3]).replaceAll(",", "")));
 					d.setFgChar(((BigInteger) os[4]).longValue());
+					d.setFlNotMember(((BigInteger) os[5]).intValue());
 					
 					
 					reportValues.add(d);
@@ -253,6 +254,7 @@ public class ResolveCommandService {
 	private ResultReportMiningDto mountReg(ReportMiningDto r) {
 		ResultReportMiningDto regAtual = new ResultReportMiningDto();
 		regAtual.setCharacterName(r.getCharacterName());
+		regAtual.setFlNotMember(r.getFlNotMember());
 		regAtual.setOres(new ArrayList<ResultReportMiningDetailDto>());
 		
 		return regAtual;

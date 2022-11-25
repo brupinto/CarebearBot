@@ -82,6 +82,7 @@ public class CorporateService {
 						CorpMember corp = new CorpMember();
 						corp.setCharacterId(membro);
 						corp.setCharacterName(null);
+						corp.setFlNotMember(0);
 						corp.setDtLastUpdate(LocalDateTime.now());
 						
 						corpMemberRep.save(corp);
@@ -125,6 +126,7 @@ public class CorporateService {
 						MiningObserverHistory mExists = miningObserverHistoryRep.searchData(moh.getObserver().getObserver_id(), moh.getCorpMember().getCharacterId(), moh.getType_id(), moh.getLast_updated());
 						
 						if(mExists == null) {
+							checkIfCorpMate(moh.getCorpMember().getCharacterId());
 							mExists = new MiningObserverHistory(moh.getRecorded_corporation_id(), moh.getObserver(), moh.getCorpMember(), moh.getLast_updated(), moh.getQuantity(),  moh.getType_id(), page);
 						}
 						else {
@@ -153,6 +155,19 @@ public class CorporateService {
 		
 	}
 	
+	private void checkIfCorpMate(Long characterId) {
+		var member = corpMemberRep.findId(characterId);
+		
+		if (member == null) {
+			CharacterDto dto = charClient.characters(characterId);
+			CorpMember newMember = new CorpMember();
+			newMember.setCharacterId(characterId);
+			newMember.setCharacterName(dto.getName());
+			newMember.setFlNotMember(1);
+		}
+	}
+
+
 	private void updateMemberName() {
 		List<CorpMember> newMembers = corpMemberRep.findByNameNull();
 		

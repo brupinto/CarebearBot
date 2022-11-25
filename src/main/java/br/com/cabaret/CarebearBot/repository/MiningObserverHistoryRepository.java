@@ -23,26 +23,26 @@ public interface MiningObserverHistoryRepository  extends JpaRepository<MiningOb
 	@Query("select g from MiningObserverHistory g where g.type_id = :typeId")
 	public List<MiningObserverHistory> findByTypeId(@Param("typeId") Long typeId);
 	
-	@Query(value ="select cm.character_name characterName, moh.type_description typeName, sum(quantity) qtMining, format((sum(quantity) * p.taxa_mining)/100,0) taxaCorp, 1 fgChar        " + 
-		          "   from mining_observer_history moh                                                                                                                                    " + 
-		          " inner join corp_member cm on moh.corp_member_character_id = cm.character_id                                                                                           " + 
-		          " inner join parametro p on p.id = 1                                                                                                                                    " + 
-		          " where 1=1                                                                                                                                                             " + 
-		          "   and moh.last_updated >= :dtIni                                                                                                                                      " + 
-		          "   and moh.last_updated <= :dtFim                                                                                                                                      " + 
-		          "   and not EXISTS (select 1 from grupo_detail gd where gd.member_character_id = cm.character_id)                                                                       " + 
-		          " group by cm.character_name, moh.type_description                                                                                                                      " + 
-		          " union ALL                                                                                                                                                             " + 
-		          " select g.grupo_name characterName, moh.type_description typeName, sum(quantity) qtMining, format((sum(quantity) * p.taxa_mining)/100,0) taxaCorp, 0 fgChar            " + 
-		          "   from mining_observer_history moh                                                                                                                                    " + 
-		          " inner join grupo_detail gd on gd.member_character_id = moh.corp_member_character_id                                                                                   " + 
-		          " inner join grupo g on g.id = gd.grupo_id                                                                                                                              " + 
-		          " inner join parametro p on p.id = 1                                                                                                                                    " + 
-		          " where 1=1                                                                                                                                                             " + 
-		          "   and moh.last_updated >= :dtIni                                                                                                                                      " + 
-		          "   and moh.last_updated <= :dtFim                                                                                                                                      " + 
-		          " group by g.grupo_name, moh.type_description                                                                                                                           " +
-		          " order by 1,2                                                                                                                                                          ",
+	@Query(value ="select cm.character_name characterName, moh.type_description typeName, sum(quantity) qtMining, format((sum(quantity) * p.taxa_mining)/100,0) taxaCorp, 1 fgChar, cm.fl_not_member  " + 
+		          "   from mining_observer_history moh                                                                                                                                                " + 
+		          " inner join corp_member cm on moh.corp_member_character_id = cm.character_id                                                                                                       " + 
+		          " inner join parametro p on p.id = 1                                                                                                                                                " + 
+		          " where 1=1                                                                                                                                                                         " + 
+		          "   and moh.last_updated >= :dtIni                                                                                                                                                  " + 
+		          "   and moh.last_updated <= :dtFim                                                                                                                                                  " + 
+		          "   and not EXISTS (select 1 from grupo_detail gd where gd.member_character_id = cm.character_id)                                                                                   " + 
+		          " group by cm.character_name, moh.type_description, cm.fl_not_member                                                                                                                                   " + 
+		          " union ALL                                                                                                                                                                         " + 
+		          " select g.grupo_name characterName, moh.type_description typeName, sum(quantity) qtMining, format((sum(quantity) * p.taxa_mining)/100,0) taxaCorp, 0 fgChar, 0 fl_not_member       " + 
+		          "   from mining_observer_history moh                                                                                                                                                " + 
+		          " inner join grupo_detail gd on gd.member_character_id = moh.corp_member_character_id                                                                                               " + 
+		          " inner join grupo g on g.id = gd.grupo_id                                                                                                                                          " + 
+		          " inner join parametro p on p.id = 1                                                                                                                                                " + 
+		          " where 1=1                                                                                                                                                                         " + 
+		          "   and moh.last_updated >= :dtIni                                                                                                                                                  " + 
+		          "   and moh.last_updated <= :dtFim                                                                                                                                                  " + 
+		          " group by g.grupo_name, moh.type_description                                                                                                                                       " +
+		          " order by 1,2                                                                                                                                                                      ",
 			nativeQuery = true)
 	public List<Object[]> reportMining(@Param("dtIni") LocalDate dtIni, @Param("dtFim") LocalDate dtFim);
 	

@@ -10,5 +10,4 @@ public class ResultReportMiningDetailDto {
 	private Long qtMining;
 	private Long taxaCorp;
 	private Long fgChar;
-
 }

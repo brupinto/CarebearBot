@@ -7,5 +7,6 @@ import lombok.Data;
 @Data
 public class ResultReportMiningDto {
 	private String CharacterName;
+	private Integer flNotMember;
 	private List<ResultReportMiningDetailDto> ores;
 }
