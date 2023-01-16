@@ -148,7 +148,8 @@ public class ResolveCommandService {
 					d.setQtMining(((BigDecimal)os[2]).longValue());
 					d.setTaxaCorp(Long.valueOf(((String)os[3]).replaceAll(",", "")));
 					d.setFgChar(((BigInteger) os[4]).longValue());
-					d.setFlNotMember(((BigInteger) os[5]).intValue());
+					if (os[5] != null)
+						d.setFlNotMember(((BigInteger) os[5]).intValue());
 					
 					
 					reportValues.add(d);

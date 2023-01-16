@@ -85,8 +85,14 @@ public class CorporateService {
 						corp.setFlNotMember(0);
 						corp.setDtLastUpdate(LocalDateTime.now());
 						
-						corpMemberRep.save(corp);
+						corpMemberRep.save(corp);	
 					}
+					else {
+						m.setFlNotMember(0);
+						corpMemberRep.save(m);
+					}
+					
+					
 				}
 			}	
 		}catch (Exception ex) {
@@ -164,6 +170,8 @@ public class CorporateService {
 			newMember.setCharacterId(characterId);
 			newMember.setCharacterName(dto.getName());
 			newMember.setFlNotMember(1);
+			
+			corpMemberRep.save(newMember);
 		}
 	}
 

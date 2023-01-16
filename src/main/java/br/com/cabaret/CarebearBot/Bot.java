@@ -83,8 +83,9 @@ public class Bot extends ListenerAdapter{
     	Message msg = event.getMessage();
         MessageChannel channel = event.getChannel();
         
-        if(webSocket.isInputClosed())
-        	connectWS(event.getJDA());
+        if (webSocket != null)
+	        if(webSocket.isInputClosed())
+	        	connectWS(event.getJDA());
         
         if (!event.getGuild().getName().equalsIgnoreCase("whelps")) {
 	        if (!channel.getName().equalsIgnoreCase("🍪𝐌𝐈𝐍𝐈𝐍𝐆🍪") && !channel.getName().equalsIgnoreCase("👿𝐊𝐈𝐋𝐋𝐁𝐎𝐀𝐑𝐃😈"))
